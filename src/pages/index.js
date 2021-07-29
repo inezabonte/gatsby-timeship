@@ -24,7 +24,7 @@ const IndexPage = () => {
 		try {
 			setStatus("pending");
 			setColor("#3454d1");
-			setMessage("Hold on ... 🚀");
+			setMessage("Boarding timeship ... 🚀");
 			const response = await axios.post("/api/time-machine", {
 				year: inputValues.year,
 				location: inputValues.location,
