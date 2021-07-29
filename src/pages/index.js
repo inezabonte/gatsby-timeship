@@ -34,6 +34,7 @@ const IndexPage = () => {
 			setMessage(response.data.message);
 			console.log(response.data);
 		} catch (error) {
+			setStatus("failed");
 			if (error.response.data.status === 429) {
 				setColor("#fb5012");
 			} else {
@@ -45,8 +46,8 @@ const IndexPage = () => {
 
 	return (
 		<main className="h-screen flex justify-center items-center bg-gray-100 ">
-			<section className="bg-white w-full max-w-3xl p-24">
-				<h1 className="text-3xl font-bold mb-4">Time Machine ⏱🚀</h1>
+			<section className="bg-white w-full max-w-xl py-4 px-8 rounded">
+				<h1 className="text-3xl font-bold my-4">Time Machine ⏱🚀</h1>
 				<form
 					className="flex flex-col text-lg space-y-8"
 					onSubmit={handleSubmit}
@@ -60,7 +61,7 @@ const IndexPage = () => {
 						<input
 							type="text"
 							name="location"
-							className="border-2 p-2 text-center"
+							className="border-2 py-2 text-center"
 							value={inputValues.location}
 							onChange={handleInputChange}
 							required
@@ -71,7 +72,7 @@ const IndexPage = () => {
 						<input
 							type="number"
 							name="year"
-							className="border-2 p-2 text-center"
+							className="border-2 py-2 text-center"
 							value={inputValues.year}
 							onChange={handleInputChange}
 							required
@@ -79,7 +80,7 @@ const IndexPage = () => {
 					</div>
 					<button
 						type="submit"
-						className="bg-blue-500 text-white text-lg font-bold p-2 rounded self-end"
+						className="bg-blue-500 text-white text-2xl font-bold p-4 rounded border-4 border-blue-900 "
 						disabled={status === "pending" ? true : false}
 					>
 						Travel 🚀
