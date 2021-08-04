@@ -15,10 +15,12 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
+    "auth0-js": "^9.16.2",
     "axios": "^0.21.1",
     "gatsby": "^3.10.2",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-use-auth": "^2.1.0-14"
   },
   "devDependencies": {
     "@netlify/plugin-gatsby": "^1.0.3",

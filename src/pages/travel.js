@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth } from "react-use-auth";
+import { navigate } from "gatsby";
 
-const IndexPage = () => {
+const Travel = () => {
+	const { logout, isAuthenticated, user } = useAuth();
+
+	useEffect(() => {
+		if (!isAuthenticated()) {
+			navigate(`/`);
+		}
+	});
+
 	const [inputValues, setImputValues] = useState({
 		year: "",
 		location: "",
@@ -46,8 +56,17 @@ const IndexPage = () => {
 
 	return (
 		<main className="h-screen flex justify-center items-center bg-gray-100 ">
+			{console.log(user)}
 			<section className="bg-white w-full max-w-xl py-4 px-8 rounded">
-				<h1 className="text-3xl font-bold my-4">Time Machine ⏱🚀</h1>
+				<div className="flex justify-between items-center">
+					<h1 className="text-3xl font-bold my-4">Time Machine ⏱🚀</h1>
+					<button
+						className="bg-red-500 font-bold text-white px-4 py-2 rounded text-lg"
+						onClick={logout}
+					>
+						Exit
+					</button>
+				</div>
 				<form
 					className="flex flex-col text-lg space-y-8"
 					onSubmit={handleSubmit}
@@ -97,4 +116,4 @@ const IndexPage = () => {
 	);
 };
 
-export default IndexPage;
+export default Travel;
