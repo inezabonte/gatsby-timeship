@@ -1,28 +1,35 @@
-import crypto from "crypto";
 import axios from "axios";
+import jwt from "express-jwt";
+import jwks from "jwks-rsa";
 
-const hashIp = ({ ipAddress, key, date }) => {
-	const dateSalt = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+const jwtCheck = jwt({
+	secret: jwks.expressJwtSecret({
+		cache: true,
+		rateLimit: true,
+		jwksRequestsPerMinute: 5,
+		jwksUri: "https://dev-2e4-ei0r.eu.auth0.com/.well-known/jwks.json",
+	}),
+	audience: "https://time-machine/api",
+	issuer: "https://dev-2e4-ei0r.eu.auth0.com/",
+	algorithms: ["RS256"],
+});
 
-	const hash = crypto
-		.createHash("sha256")
-		.update(`${ipAddress}-${key}-${dateSalt}`)
-		.digest("hex");
-
-	return hash;
+const checkAuth = async (req, res) => {
+	await new Promise((resolve, reject) => {
+		jwtCheck(req, res, (result) => {
+			if (result instanceof Error) {
+				reject(result);
+			}
+			resolve(result);
+		});
+	});
 };
 
 export default async function timeMachine(req, res) {
-	const ipAddress = req.headers["client-ip"];
-	const hashedIp = hashIp({
-		ipAddress,
-		key: process.env.HASH_KEY,
-		date: new Date(),
-	});
-
-	const { year, location } = req.body;
-
 	try {
+		await checkAuth(req, res);
+
+		const { email, year, location } = req.body;
 		const travellers = await axios.get(
 			`https://api.airtable.com/v0/${process.env.BASE_KEY}/users`,
 			{
@@ -35,7 +42,7 @@ export default async function timeMachine(req, res) {
 		const records = travellers.data.records;
 
 		const foundPassenger = records.find(
-			(passenger) => passenger.fields.id === hashedIp
+			(passenger) => passenger.fields.email === email
 		);
 
 		if (foundPassenger) {
@@ -50,9 +57,10 @@ export default async function timeMachine(req, res) {
 				records: [
 					{
 						fields: {
-							id: hashedIp,
+							email,
 							year: parseInt(year),
 							location,
+							timestamp: new Date(),
 						},
 					},
 				],
@@ -69,6 +77,10 @@ export default async function timeMachine(req, res) {
 			message: `You are now in ${location} in the year ${year} ⏱`,
 		});
 	} catch (error) {
-		return res.status(500).json({ status: 500, message: error.message });
+		return res.status(error.status || 500).json({
+			status: error.status || 500,
+			message:
+				error.inner?.message || `Time machhine under maintenance try later`,
+		});
 	}
 }
