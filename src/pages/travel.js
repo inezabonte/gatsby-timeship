@@ -18,7 +18,7 @@ const HandleAuthButton = () => {
 		return (
 			<button
 				className="bg-blue-600 text-white font-bold p-2 rounded"
-				onClick={logout({ returnTo: window?.location })}
+				onClick={() => logout({ returnTo: window?.location })}
 			>
 				Logout
 			</button>
@@ -118,7 +118,7 @@ const Travel = () => {
 	return (
 		<main className="h-screen flex flex-col space-y-10  items-center m-auto max-w-2xl">
 			<nav className="bg-gray-100 w-full h-16 flex justify-between items-center p-2">
-				<h1 className="text-2xl font-bold">Gatbsy TimeShip</h1>
+				<h1 className="text-2xl font-bold">{user.family_name}</h1>
 				<HandleAuthButton />
 			</nav>
 			<section className="bg-white w-full max-w-xl py-4 px-8 rounded">
