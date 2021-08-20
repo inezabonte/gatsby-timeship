@@ -35,12 +35,31 @@ const HandleAuthButton = () => {
 	}
 };
 
+const getAccessToken = async ({
+	getAccessTokenSilently,
+	getAccessTokenWithPopup,
+}) => {
+	const options = {
+		audience: process.env.GATSBY_AUTH0_TIME_TRAVEL_API,
+	};
+
+	try {
+		return await getAccessTokenSilently(options);
+	} catch (error) {
+		if (error.error === "consent_required") {
+			return await getAccessTokenWithPopup(options);
+		} else {
+			throw error;
+		}
+	}
+};
+
 const Travel = () => {
 	const [status, setStatus] = useState("initial");
 	const [message, setMessage] = useState("");
 	const [color, setColor] = useState("#fff");
 
-	const { user, getAccessTokenSilently } = useAuth0();
+	const { user, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
 
 	const [inputValues, setImputValues] = useState({
 		year: "",
@@ -59,13 +78,15 @@ const Travel = () => {
 		e.preventDefault();
 
 		try {
-			const accessToken = await getAccessTokenSilently({
-				audience: "https://time-machine/api",
-			});
-
 			setStatus("pending");
 			setColor("#3454d1");
 			setMessage("Boarding timeship ... 🚀");
+
+			const accessToken = await getAccessToken({
+				getAccessTokenSilently,
+				getAccessTokenWithPopup,
+			});
+
 			const response = await axios.post(
 				"/api/time-machine",
 				{

@@ -7,10 +7,10 @@ const jwtCheck = jwt({
 		cache: true,
 		rateLimit: true,
 		jwksRequestsPerMinute: 5,
-		jwksUri: "https://dev-2e4-ei0r.eu.auth0.com/.well-known/jwks.json",
+		jwksUri: "https://dev-x0k9-aws.us.auth0.com/.well-known/jwks.json",
 	}),
-	audience: "https://time-machine/api",
-	issuer: "https://dev-2e4-ei0r.eu.auth0.com/",
+	audience: "https://timeship-api/",
+	issuer: "https://dev-x0k9-aws.us.auth0.com/",
 	algorithms: ["RS256"],
 });
 
