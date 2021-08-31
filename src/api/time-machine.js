@@ -25,6 +25,8 @@ const checkAuth = async (req, res) => {
 	});
 };
 
+const currentTimestamp = Math.floor(Date.now() / 1000);
+
 export default async function timeMachine(req, res) {
 	try {
 		await checkAuth(req, res);
@@ -60,7 +62,7 @@ export default async function timeMachine(req, res) {
 							email,
 							year: parseInt(year),
 							location,
-							timestamp: new Date(),
+							timestamp: currentTimestamp,
 						},
 					},
 				],
@@ -79,8 +81,7 @@ export default async function timeMachine(req, res) {
 	} catch (error) {
 		return res.status(error.status || 500).json({
 			status: error.status || 500,
-			message:
-				error.inner?.message || `Time machhine under maintenance try later`,
+			message: error.message,
 		});
 	}
 }

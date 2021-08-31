@@ -118,7 +118,7 @@ const Travel = () => {
 	return (
 		<main className="h-screen flex flex-col space-y-10  items-center m-auto max-w-2xl">
 			<nav className="bg-gray-100 w-full h-16 flex justify-between items-center p-2">
-				<h1 className="text-2xl font-bold">{user.family_name}</h1>
+				<h1 className="text-gray-500 font-bold text-sm">{user?.name}</h1>
 				<HandleAuthButton />
 			</nav>
 			<section className="bg-white w-full max-w-xl py-4 px-8 rounded">
@@ -164,7 +164,7 @@ const Travel = () => {
 					</button>
 				</form>
 				<div
-					className="text-white mt-8 p-8 rounded text-2xl font-extrabold"
+					className="text-white mt-8 p-8 rounded text-xl font-extrabold"
 					style={{ backgroundColor: color }}
 				>
 					{message}
