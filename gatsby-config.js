@@ -3,5 +3,5 @@ module.exports = {
 		siteUrl: "https://www.yourdomain.tld",
 		title: "Gastby Timeship",
 	},
-	plugins: ["gatsby-plugin-postcss"],
+	plugins: ["gatsby-plugin-postcss", "gatsby-plugin-gatsby-cloud"],
 };
