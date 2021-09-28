@@ -41,16 +41,19 @@ export default async function timeMachine(req, res) {
 			}
 		);
 
-		const records = travellers.data.records;
+		const records = travellers.data.records
+			.filter((user) => user.fields.email === email)
+			.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
-		const foundPassenger = records.find(
-			(passenger) => passenger.fields.email === email
-		);
+		const lastTrip = records[0].fields.timestamp + 1800;
 
-		if (foundPassenger) {
-			return res
-				.status(429)
-				.json({ status: 429, message: "Timeship is charging 🔋⚡️" });
+		if (lastTrip > currentTimestamp) {
+			return res.status(429).json({
+				status: 429,
+				message: `${Math.floor(
+					100 - ((lastTrip - currentTimestamp) / 1800) * 100
+				)}% charged ⚡️`,
+			});
 		}
 
 		await axios.post(
