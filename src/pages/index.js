@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "gatsby";
 
-export default function Index() {
+export default function IndexPage() {
 	return (
 		<main className="flex flex-col h-screen justify-center items-center space-y-5">
 			<section>
@@ -12,9 +13,12 @@ export default function Index() {
 				</p>
 			</section>
 			<section>
-				<button className="bg-red-600 text-lg font-bold text-white p-4 rounded">
-					Identify yourself 🏴‍☠️
-				</button>
+				<Link
+					to="/travel"
+					className="bg-green-500 text-lg font-bold text-white p-4 rounded"
+				>
+					Ready to travel
+				</Link>
 			</section>
 		</main>
 	);

@@ -1,28 +1,37 @@
-import crypto from "crypto";
 import axios from "axios";
+import jwt from "express-jwt";
+import jwks from "jwks-rsa";
 
-const hashIp = ({ ipAddress, key, date }) => {
-	const dateSalt = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+const jwtCheck = jwt({
+	secret: jwks.expressJwtSecret({
+		cache: true,
+		rateLimit: true,
+		jwksRequestsPerMinute: 5,
+		jwksUri: "https://dev-x0k9-aws.us.auth0.com/.well-known/jwks.json",
+	}),
+	audience: "https://timeship-api/",
+	issuer: "https://dev-x0k9-aws.us.auth0.com/",
+	algorithms: ["RS256"],
+});
 
-	const hash = crypto
-		.createHash("sha256")
-		.update(`${ipAddress}-${key}-${dateSalt}`)
-		.digest("hex");
-
-	return hash;
+const checkAuth = async (req, res) => {
+	await new Promise((resolve, reject) => {
+		jwtCheck(req, res, (result) => {
+			if (result instanceof Error) {
+				reject(result);
+			}
+			resolve(result);
+		});
+	});
 };
 
+const currentTimestamp = Math.floor(Date.now() / 1000);
+
 export default async function timeMachine(req, res) {
-	const ipAddress = req.headers["client-ip"];
-	const hashedIp = hashIp({
-		ipAddress,
-		key: process.env.HASH_KEY,
-		date: new Date(),
-	});
-
-	const { year, location } = req.body;
-
 	try {
+		await checkAuth(req, res);
+
+		const { email, year, location } = req.body;
 		const travellers = await axios.get(
 			`https://api.airtable.com/v0/${process.env.BASE_KEY}/users`,
 			{
@@ -32,16 +41,19 @@ export default async function timeMachine(req, res) {
 			}
 		);
 
-		const records = travellers.data.records;
+		const records = travellers.data.records
+			.filter((user) => user.fields.email === email)
+			.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
-		const foundPassenger = records.find(
-			(passenger) => passenger.fields.id === hashedIp
-		);
+		const lastTrip = records[0].fields.timestamp + 1800;
 
-		if (foundPassenger) {
-			return res
-				.status(429)
-				.json({ status: 429, message: "Timeship is charging 🔋⚡️" });
+		if (lastTrip > currentTimestamp) {
+			return res.status(429).json({
+				status: 429,
+				message: `${Math.floor(
+					100 - ((lastTrip - currentTimestamp) / 1800) * 100
+				)}% charged ⚡️`,
+			});
 		}
 
 		await axios.post(
@@ -50,9 +62,10 @@ export default async function timeMachine(req, res) {
 				records: [
 					{
 						fields: {
-							id: hashedIp,
+							email,
 							year: parseInt(year),
 							location,
+							timestamp: currentTimestamp,
 						},
 					},
 				],
@@ -69,6 +82,9 @@ export default async function timeMachine(req, res) {
 			message: `You are now in ${location} in the year ${year} ⏱`,
 		});
 	} catch (error) {
-		return res.status(500).json({ status: 500, message: error.message });
+		return res.status(error.status || 500).json({
+			status: error.status || 500,
+			message: error.message,
+		});
 	}
 }
