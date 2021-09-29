@@ -17,7 +17,7 @@ export default function IndexPage() {
 					to="/travel"
 					className="bg-green-500 text-lg font-bold text-white p-4 rounded"
 				>
-					Ready to travel
+					Login to travel
 				</Link>
 			</section>
 		</main>

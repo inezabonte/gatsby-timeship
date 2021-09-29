@@ -48,11 +48,10 @@ export default async function timeMachine(req, res) {
 		const lastTrip = records[0].fields.timestamp + 300;
 
 		if (lastTrip > currentTimestamp) {
+			const timeRemaining = Math.floor((lastTrip - currentTimestamp) / 60);
 			return res.status(429).json({
 				status: 429,
-				message: `${Math.floor(
-					100 - ((lastTrip - currentTimestamp) / 300) * 100
-				)}% charged ⚡️`,
+				message: `${timeRemaining} minutes to full charge ⚡️`,
 			});
 		}
 
