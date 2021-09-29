@@ -45,13 +45,13 @@ export default async function timeMachine(req, res) {
 			.filter((user) => user.fields.email === email)
 			.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
-		const lastTrip = records[0].fields.timestamp + 1800;
+		const lastTrip = records[0].fields.timestamp + 300;
 
 		if (lastTrip > currentTimestamp) {
 			return res.status(429).json({
 				status: 429,
 				message: `${Math.floor(
-					100 - ((lastTrip - currentTimestamp) / 1800) * 100
+					100 - ((lastTrip - currentTimestamp) / 300) * 100
 				)}% charged ⚡️`,
 			});
 		}

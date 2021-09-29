@@ -1,3 +1,13 @@
-# Challenge 2: Gather reactions (claps, hearts, unicorns, votes) from visitors
+# Gatsby Timeship 🚀⏰
 
-Add Medium-style clapping, Dev.to-style unicorns, your favorite emoji reactions or voting to your site using Fauna, Google Sheet or another service of your choice.
+Travel through time and beyond using Gatsby Functions 🚀
+
+## Installation ⬇️
+
+1. Clone this repository
+2. Run `npm install` or `yarn`
+3. To run the project locally use `gatsby develop`
+
+## Deployment 🚀
+
+The Timeship is deployed live on Gatsby Cloud ☁️ [Link](https://gatsbytimeshipmain.gatsbyjs.io/)
