@@ -1,6 +1,6 @@
 import React from "react";
-import { useQuery } from "react-query";
 import axios from "axios";
+import useSWR from "swr";
 
 export default function History({ user }) {
 	const fetchHistory = async () => {
@@ -8,10 +8,10 @@ export default function History({ user }) {
 		return data;
 	};
 
-	const { data } = useQuery(
-		[user ? `travel-history/${user.email}` : null],
+	const { data } = useSWR(
+		user ? `travel-history/${user.email}` : null,
 		fetchHistory,
-		{ refetchInterval: 5000 }
+		{ refreshInterval: 5000 }
 	);
 
 	return (

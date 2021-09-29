@@ -68,7 +68,7 @@ export default function TravelForm() {
 				}
 			);
 			setStatus("success");
-			setColor("#23ce6b");
+			setColor("#119b2c");
 			setMessage(response.data.message);
 			console.log(response.data);
 		} catch (error) {
