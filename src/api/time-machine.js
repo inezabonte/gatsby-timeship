@@ -25,9 +25,8 @@ const checkAuth = async (req, res) => {
 	});
 };
 
-const currentTimestamp = Math.floor(Date.now() / 1000);
-
 export default async function timeMachine(req, res) {
+	const currentTimestamp = Math.floor(Date.now() / 1000);
 	try {
 		await checkAuth(req, res);
 
