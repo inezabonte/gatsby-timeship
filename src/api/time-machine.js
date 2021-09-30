@@ -44,7 +44,7 @@ export default async function timeMachine(req, res) {
 			.filter((user) => user.fields.email === email)
 			.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
-		if (records) {
+		if (records.length > 0) {
 			const lastTrip = records[0].fields.timestamp + 300;
 
 			if (lastTrip > currentTimestamp) {
