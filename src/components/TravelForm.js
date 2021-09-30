@@ -72,7 +72,7 @@ export default function TravelForm() {
 			setMessage(response.data.message);
 		} catch (error) {
 			setStatus("failed");
-			if (error.response.data.status === 429) {
+			if (error.response?.data.status) {
 				setColor("#fb5012");
 				setMessage(error.response.data.message);
 			} else {
