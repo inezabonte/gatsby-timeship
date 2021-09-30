@@ -70,15 +70,15 @@ export default function TravelForm() {
 			setStatus("success");
 			setColor("#119b2c");
 			setMessage(response.data.message);
-			console.log(response.data);
 		} catch (error) {
 			setStatus("failed");
 			if (error.response.data.status === 429) {
 				setColor("#fb5012");
+				setMessage(error.response.data.message);
 			} else {
 				setColor("#f00");
+				setMessage("Something went wrong please try again");
 			}
-			setMessage(error.response.data.message);
 		}
 	};
 

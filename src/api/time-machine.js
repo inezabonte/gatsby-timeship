@@ -45,14 +45,16 @@ export default async function timeMachine(req, res) {
 			.filter((user) => user.fields.email === email)
 			.sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime));
 
-		const lastTrip = records[0].fields.timestamp + 300;
+		if (records) {
+			const lastTrip = records[0].fields.timestamp + 300;
 
-		if (lastTrip > currentTimestamp) {
-			const timeRemaining = Math.floor((lastTrip - currentTimestamp) / 60);
-			return res.status(429).json({
-				status: 429,
-				message: `${timeRemaining} minutes to full charge ⚡️`,
-			});
+			if (lastTrip > currentTimestamp) {
+				const timeRemaining = Math.floor((lastTrip - currentTimestamp) / 60);
+				return res.status(429).json({
+					status: 429,
+					message: `${timeRemaining} minutes to full charge ⚡️`,
+				});
+			}
 		}
 
 		await axios.post(
