@@ -60,6 +60,8 @@ export default function TravelForm() {
 					year: inputValues.year,
 					location: inputValues.location,
 					email: user.email,
+					cancelUrl: `${window.location}?payment=cancelled`,
+					successUrl: `${window.location.origin}/payment?session_id={CHECKOUT_SESSION_ID}`
 				},
 				{
 					headers: {
@@ -67,9 +69,7 @@ export default function TravelForm() {
 					},
 				}
 			);
-			setStatus("success");
-			setColor("#119b2c");
-			setMessage(response.data.message);
+			window.location = response.data.url
 		} catch (error) {
 			setStatus("failed");
 			if (error.response?.data.status) {
