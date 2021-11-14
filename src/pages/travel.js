@@ -42,7 +42,7 @@ const Travel = () => {
 	return (
 		<main className="h-screen flex flex-col space-y-6  items-center m-auto max-w-2xl">
 			<nav className="bg-gray-100 w-full h-16 flex justify-between items-center p-2">
-				<h1 className="text-gray-500 font-bold text-sm">{user?.name}</h1>
+				<h1 className="text-gray-500 font-bold text-sm">{user?.email}</h1>
 				<HandleAuthButton />
 			</nav>
 			<TravelForm />

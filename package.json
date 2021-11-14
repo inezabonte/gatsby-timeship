@@ -22,9 +22,12 @@
 		"express-jwt": "^6.1.0",
 		"gatsby": "^3.10.2",
 		"gatsby-plugin-gatsby-cloud": "^3.2.0",
+		"http-errors": "^1.8.0",
 		"jwks-rsa": "^2.0.4",
+		"query-string": "^7.0.1",
 		"react": "^17.0.1",
 		"react-dom": "^17.0.1",
+		"stripe": "^8.188.0",
 		"swr": "^1.0.1"
 	},
 	"devDependencies": {

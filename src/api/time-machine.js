@@ -2,6 +2,8 @@ import axios from "axios";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
 
+const stripe = require('stripe')(process.env.STRIPE_KEY)
+
 const jwtCheck = jwt({
 	secret: jwks.expressJwtSecret({
 		cache: true,
@@ -25,12 +27,29 @@ const checkAuth = async (req, res) => {
 	});
 };
 
-export default async function timeMachine(req, res) {
+export default async function handler(req, res) {
+	try {
+		
+		if(req.method === 'POST'){
+			await postHandler(req, res)
+		}
+	
+		if(req.method === 'GET'){
+			await getHandler(req, res)
+		}
+		return res.status(405).json({message: "Bad request"})
+	} catch (error) {
+		return res.status(500).json({message: error.message})
+	}
+
+}
+
+async function postHandler(req, res) {
 	const currentTimestamp = Math.floor(Date.now() / 1000);
 	try {
 		await checkAuth(req, res);
 
-		const { email, year, location } = req.body;
+		const { email, year, location, cancelUrl, successUrl } = req.body;
 		const travellers = await axios.get(
 			`https://api.airtable.com/v0/${process.env.BASE_KEY}/users`,
 			{
@@ -56,35 +75,37 @@ export default async function timeMachine(req, res) {
 			}
 		}
 
-		await axios.post(
-			`https://api.airtable.com/v0/${process.env.BASE_KEY}/users`,
-			{
-				records: [
-					{
-						fields: {
-							email,
-							year: parseInt(year),
-							location,
-							timestamp: currentTimestamp,
-						},
-					},
-				],
-			},
-			{
-				headers: {
-					Authorization: `Bearer ${process.env.API_KEY}`,
-				},
+		const session = await stripe.checkout.sessions.create({
+			success_url: successUrl,
+			cancel_url: cancelUrl,
+			payment_method_types: ['card'],
+			line_items: [
+			  {price: 'price_1JuaRQDUd9dYFKAvwijMLtPI', quantity: 1},
+			],
+			mode: 'payment',
+			customer_email: email,
+			metadata: {
+				email,
+				year,
+				location
 			}
-		);
-
-		return res.status(201).json({
-			status: 201,
-			message: `You are now in ${location} in the year ${year} ⏱`,
-		});
+		  });
+		res.status(200).json({url: session.url})
 	} catch (error) {
 		return res.status(error.status || 500).json({
 			status: error.status || 500,
 			message: error.message,
 		});
 	}
+
+
+}
+
+async function getHandler(req, res) {
+	const session = await stripe.checkout.sessions.retrieve(req.query.sessionId)
+	if(session.payment_status !== "paid"){
+		throw new Error("You haven't paid for your ticket 👮🏽‍♀️🚨")
+	}
+	res.status(200).json({message: `You travelled to ${session.metadata.location} in the year ${session.metadata.year}`})
+
 }
