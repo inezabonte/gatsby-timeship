@@ -1404,10 +1404,10 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@raae/gatsby-plugin-let-it-snow@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@raae/gatsby-plugin-let-it-snow/-/gatsby-plugin-let-it-snow-0.1.0.tgz#292059cb8735f9e78d2cffedc3d8f31b95cf71bd"
-  integrity sha512-L8A0iDTsNPvHQokIHBho/IcW2Ir7zPAwkAoCCdYZs7EB7IjfPStJ4v+pZVtCKeDmYzBa3KsTj1Ld5vMWMdZ8TQ==
+"@raae/gatsby-plugin-let-it-snow@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@raae/gatsby-plugin-let-it-snow/-/gatsby-plugin-let-it-snow-0.3.0.tgz#2187c44763aa3c7d8dcc0deacd743ad23af64506"
+  integrity sha512-vsfhc8T6poz1X6Jetwb31kNJfJlovAzeCDY2AUnahmpD+MOwL4Uk4H+pb1Hd0krcsHF3FOkkdl0kmoiujWqAVg==
   dependencies:
     canvas-confetti "1.4.0"
 
