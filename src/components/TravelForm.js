@@ -55,13 +55,13 @@ export default function TravelForm() {
 			});
 
 			const response = await axios.post(
-				"/api/time-machine",
+				"/api/checkout-sessions",
 				{
 					year: inputValues.year,
 					location: inputValues.location,
 					email: user.email,
 					cancelUrl: `${window.location}?payment=cancelled`,
-					successUrl: `${window.location.origin}/payment?session_id={CHECKOUT_SESSION_ID}`
+					successUrl: `${window.location.origin}/payment?session_id={CHECKOUT_SESSION_ID}`,
 				},
 				{
 					headers: {
@@ -69,7 +69,7 @@ export default function TravelForm() {
 					},
 				}
 			);
-			window.location = response.data.url
+			window.location = response.data.url;
 		} catch (error) {
 			setStatus("failed");
 			if (error.response?.data.status) {
