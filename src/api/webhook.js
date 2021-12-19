@@ -29,12 +29,12 @@ export default async function handler(req, res) {
 
 async function checkEventAndStatus(type, data) {
 	if (type !== "checkout.session.completed") {
-		throw createError(405, "Event type not allowed");
+		throw createError(401, "Event type not allowed");
 	}
 
 	const stripeSession = await stripe.checkout.sessions.retrieve(data.object.id);
 	if (stripeSession.payment_status !== "paid") {
-		throw createError(402, "You haven't paid for your ticket 👮🏽‍♀️🚨");
+		throw createError(401, "You haven't paid for your ticket 👮🏽‍♀️🚨");
 	}
 
 	return stripeSession;
@@ -57,7 +57,7 @@ async function checkTicketReuse(sessionId) {
 	);
 
 	if (foundTicket) {
-		throw createError(406, "This ticket has already been used");
+		throw createError(401, "This ticket has already been used");
 	}
 }
 
