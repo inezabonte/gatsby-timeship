@@ -2,7 +2,7 @@ import axios from "axios";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
 
-const stripe = require("stripe")(process.env.STRIPE_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const jwtCheck = jwt({
 	secret: jwks.expressJwtSecret({

@@ -1,36 +1,51 @@
 import axios from "axios";
-import createError from 'http-errors'
-const stripe = require('stripe')(process.env.STRIPE_KEY)
+import createError from "http-errors";
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-
-export default async function  handler(req, res) {
+export default async function handler(req, res) {
 	try {
-		if(req.method === 'POST'){
+		if (req.method === "POST") {
+			const { type, data } = req.body;
 
-			await webhookHandler(req, res)
+			// Check event type and payment status
+			const session = await checkEventAndStatus(type, data);
+
+			// Check if ticket is being re-used
+			await checkTicketReuse(session.id);
+
+			// Save travel details to Airtable
+			await saveToAirtable(session);
+
+			return res.status(201).json({
+				status: 201,
+				message: `success`,
+			});
 		}
-		return res.status(405).json({message: "Method not allowed"})
+		return res.status(401).json({ message: "Method not allowed" });
 	} catch (error) {
-		return res.status(error.status).json({message: error.message})	
+		return res.status(error.status).json({ message: error.message });
 	}
 }
 
-async function webhookHandler(req, res) {
-	const {type, data} = req.body
-	if(type !== 'checkout.session.completed'){
-		throw createError(405, 'Event type not allowed')
-	}
-	
-	const stripeSession = await stripe.checkout.sessions.retrieve(data.object.id)
-	if(stripeSession.payment_status !== "paid"){
-		throw createError(402,"You haven't paid for your ticket 👮🏽‍♀️🚨")
+async function checkEventAndStatus(type, data) {
+	if (type !== "checkout.session.completed") {
+		throw createError(405, "Event type not allowed");
 	}
 
+	const stripeSession = await stripe.checkout.sessions.retrieve(data.object.id);
+	if (stripeSession.payment_status !== "paid") {
+		throw createError(402, "You haven't paid for your ticket 👮🏽‍♀️🚨");
+	}
+
+	return stripeSession;
+}
+
+async function checkTicketReuse(sessionId) {
 	const travellers = await axios.get(
-		`https://api.airtable.com/v0/${process.env.BASE_KEY}/users`,
+		`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_KEY}/users`,
 		{
 			headers: {
-				Authorization: `Bearer ${process.env.API_KEY}`,
+				Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
 			},
 		}
 	);
@@ -38,24 +53,26 @@ async function webhookHandler(req, res) {
 	const records = travellers.data.records;
 
 	const foundTicket = records.find(
-		(passenger) => passenger.fields.ticket === stripeSession.id
+		(passenger) => passenger.fields.ticket === sessionId
 	);
 
-	if(foundTicket) {
-		throw createError(406,"This ticket has already been used" )
+	if (foundTicket) {
+		throw createError(406, "This ticket has already been used");
 	}
+}
 
+async function saveToAirtable(session) {
 	const currentTimestamp = Math.floor(Date.now() / 1000);
 	await axios.post(
-		`https://api.airtable.com/v0/${process.env.BASE_KEY}/users`,
+		`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_KEY}/users`,
 		{
 			records: [
 				{
 					fields: {
-						email: stripeSession.metadata.email,
-						year: parseInt(stripeSession.metadata.year),
-						location: stripeSession.metadata.location,
-						ticket: stripeSession.id,
+						email: session.metadata.email,
+						year: parseInt(session.metadata.year),
+						location: session.metadata.location,
+						ticket: session.id,
 						timestamp: currentTimestamp,
 					},
 				},
@@ -63,15 +80,8 @@ async function webhookHandler(req, res) {
 		},
 		{
 			headers: {
-				Authorization: `Bearer ${process.env.API_KEY}`,
+				Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
 			},
 		}
 	);
-
-	return res.status(201).json({
-		status: 201,
-		message: `success`,
-	})
-
-
 }
