@@ -49,10 +49,10 @@ async function postHandler(req, res) {
 
 		const { email, year, location, cancelUrl, successUrl } = req.body;
 		const travellers = await axios.get(
-			`https://api.airtable.com/v0/${process.env.BASE_KEY}/users`,
+			`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_KEY}/users`,
 			{
 				headers: {
-					Authorization: `Bearer ${process.env.API_KEY}`,
+					Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
 				},
 			}
 		);
